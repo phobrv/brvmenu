@@ -1,5 +1,5 @@
 <?php
-namespace Phobrv\Menu\Services;
+namespace Phobrv\BrvMenu\Services;
 use Phobrv\CoreAdmin\Repositories\PostRepository;
 use Phobrv\CoreAdmin\Repositories\TermRepository;
 
