@@ -1,12 +1,13 @@
 {
     "name": "phobrv/brvmenu",
     "description": ":package_description",
-    "license": "license",
+    "license": "MIT",
+    "type": "project",
     "authors": [
         {
-            "name": "author name",
-            "email": "author email",
-            "homepage": "author homepage"
+            "name": "Nguyen Trong Pho",
+            "email": "nguyentrongpho@gmail.com",
+            "homepage": "https://nguyentrongpho.com"
         }
     ],
     "homepage": "https://github.com/phobrv/brvmenu",
