@@ -1,7 +1,7 @@
 <?php
 namespace Phobrv\BrvMenu\Services;
-use Phobrv\CoreAdmin\Repositories\PostRepository;
-use Phobrv\CoreAdmin\Repositories\TermRepository;
+use Phobrv\BrvCore\Repositories\PostRepository;
+use Phobrv\BrvCore\Repositories\TermRepository;
 
 class HandleMenuServices {
 	protected $termRepository;
