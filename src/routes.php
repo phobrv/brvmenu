@@ -1,7 +1,7 @@
 <?php
 Route::middleware(['web', 'auth', 'auth:sanctum', 'lang', 'verified'])->namespace('Phobrv\BrvCore\Http\Controllers')->group(function () {
 	Route::middleware(['can:menu_manage'])->prefix('admin')->group(function () {
-		Route::resource('term/menugroup', 'TermController');
+		Route::resource('menugroup', 'TermController');
 	});
 });
 
