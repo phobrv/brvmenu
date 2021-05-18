@@ -90,6 +90,7 @@
 							<th>{{__('Name')}}</th>
 							<th class="text-center">{{__('Type')}}</th>
 							<th class="text-center">{{__('Status')}}</th>
+							<th class="text-center">{{__('Lang')}}</th>
 							<th class="text-center">{{__('Change Order')}}</th>
 							<th class="text-center">{{__('Action')}}</th>
 						</tr>
@@ -117,6 +118,9 @@
 								@else
 								<i style="color: red;" class="fa fa-times-circle-o" aria-hidden="true"></i>
 								@endif
+							</td>
+							<td align="center">
+								{!! $r->langButtons !!}
 							</td>
 							<td align="center">
 								<a href="{{route('menu.changeOrder',['menu'=>$r->id,'type'=>'plus'])}}"> <i class="fa fa-fw fa-chevron-circle-up"></i>

@@ -4,6 +4,7 @@ namespace Phobrv\BrvMenu\Controllers;
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
+use Phobrv\BrvConfigs\Services\ConfigLangService;
 use Phobrv\BrvCore\Repositories\PostRepository;
 use Phobrv\BrvCore\Repositories\TermRepository;
 use Phobrv\BrvCore\Repositories\UserRepository;
@@ -19,14 +20,17 @@ class MenuController extends Controller {
 	protected $handleMenuService;
 	protected $type;
 	protected $taxonomy;
-
+	protected $configLangService;
+	protected $langMain;
 	public function __construct(
 		UserRepository $userRepository,
 		TermRepository $termRepository,
 		PostRepository $postRepository,
 		HandleMenuServices $handleMenuService,
+		ConfigLangService $configLangService,
 		UnitServices $unitService
 	) {
+		$this->configLangService = $configLangService;
 		$this->handleMenuService = $handleMenuService;
 		$this->userRepository = $userRepository;
 		$this->postRepository = $postRepository;
@@ -34,6 +38,7 @@ class MenuController extends Controller {
 		$this->unitService = $unitService;
 		$this->type = config('option.post_type.menu_item');
 		$this->taxonomy = config('option.taxonomy.menugroup');
+		$this->langMain = $configLangService->getMainLang();
 	}
 	/**
 	 * Display a listing of the resource.
@@ -55,7 +60,11 @@ class MenuController extends Controller {
 			$data['term'] = $this->termRepository->findWhere(['id' => $data['select']])->first();
 			$data['arrayMenuParent'] = [];
 			if ($data['term']) {
-				$data['menus'] = $this->handleMenuService->handleMenuItem($data['term']->posts()->orderBy('order')->get());
+				$langArray = $this->configLangService->getArrayLangConfig();
+				$data['menus'] = $this->handleMenuService->handleMenuItem($data['term']->posts()->where('lang', $this->langMain)->orderBy('order')->get());
+				foreach ($data['menus'] as $key => $post) {
+					$data['menus'][$key]->langButtons = $this->configLangService->genLangButton($post->id, $langArray);
+				}
 				$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts, 0);
 			}
 
