@@ -40,11 +40,7 @@ class MenuController extends Controller {
 		$this->taxonomy = config('option.taxonomy.menugroup');
 		$this->langMain = $configLangService->getMainLang();
 	}
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
+
 	public function index() {
 
 		$user = Auth::user();
@@ -66,7 +62,8 @@ class MenuController extends Controller {
 				foreach ($data['menus'] as $key => $post) {
 					$data['menus'][$key]->langButtons = $this->configLangService->genLangButton($post->id, $langArray);
 				}
-				$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts, 0);
+
+				$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts->where('lang', $this->langMain), 0);
 			}
 
 			$data['submit_label'] = "Create";
@@ -81,21 +78,10 @@ class MenuController extends Controller {
 		return redirect()->route('menu.index');
 	}
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
 	public function create() {
 		//
 	}
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @return \Illuminate\Http\Response
-	 */
 	public function store(Request $request) {
 		$user = Auth::user();
 		if ($request->subtype == 'link') {
@@ -115,6 +101,7 @@ class MenuController extends Controller {
 			]
 		);
 		try {
+
 			$data = $request->all();
 			$menu = $this->termRepository->find($data['term_id']);
 			$data['order'] = ($menu->posts->count() > 0) ? (($menu->posts->sortByDesc('order')->first()['order']) + 1) : 1;
@@ -134,22 +121,10 @@ class MenuController extends Controller {
 		}
 	}
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function show($id) {
 		//
 	}
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function edit($id) {
 		$data['breadcrumbs'] = $this->unitService->generateBreadcrumbs(
 			[
@@ -157,11 +132,10 @@ class MenuController extends Controller {
 				['text' => 'Edit Menu Item', 'href' => ''],
 			]
 		);
-
 		try {
 			$data['post'] = $this->postRepository->find($id);
 			$data['term'] = $data['post']->terms()->where('taxonomy', $this->taxonomy)->first();
-			$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts, $id);
+			$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts->where('lang', $this->langMain), $id);
 			$data['submit_label'] = "Update";
 			$data['meta'] = $this->postRepository->getMeta($data['post']->postMetas);
 			$data['meta']['box_sidebars'] = $this->postRepository->getMultiMetaByKey($data['post']->postMetas, 'box_sidebar');
@@ -173,13 +147,6 @@ class MenuController extends Controller {
 		}
 	}
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function update(Request $request, $item_id) {
 		$request->validate(
 			[
@@ -299,12 +266,6 @@ class MenuController extends Controller {
 		return $data['meta_id'];
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function destroy($id) {
 		$menus = $this->postRepository->find($id)->terms;
 		$this->postRepository->destroyAllLang($id);

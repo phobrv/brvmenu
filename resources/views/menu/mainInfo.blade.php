@@ -29,6 +29,7 @@
 			@endif
 			@include('phobrv::input.inputSelect',['label'=>'Template','key'=>'subtype','array'=>$templateMenu])
 			@else
+			<i>Menu không phải ngôn ngữ chính sẽ kế thừa các thuộc tính này từ menu gốc</i>
 			@include('phobrv::input.text',['label'=>'Parent','value'=>$data['arrayMenuParent'][$data['post']->parent]])
 			@include('phobrv::input.text',['label'=>'Template','value'=>$templateMenu[$data['post']->subtype]])
 
