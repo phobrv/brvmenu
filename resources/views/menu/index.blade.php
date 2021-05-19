@@ -148,7 +148,11 @@
 						@foreach($r->childs as $c)
 						<tr>
 							<td align="center">{{$loop->index + 1}}</td>
-							<td style="padding-left: 30px;">{{$c->title}}</td>
+							<td style="padding-left: 30px;">
+								<a href="{{ route('level1',['slug'=>$c->slug]) }}">
+									{{$c->title}}
+								</a>
+							</td>
 							<td align="center">
 								@isset($templateMenu[$c->subtype])
 								{{ $templateMenu[$c->subtype] }}
