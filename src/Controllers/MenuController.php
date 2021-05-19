@@ -58,7 +58,7 @@ class MenuController extends Controller {
 			$data['arrayMenuParent'] = [];
 			if ($data['term']) {
 				$data['menus'] = $this->handleMenuService->handleMenuItem($data['term']->posts()->where('lang', $this->langMain)->orderBy('order')->get());
-				$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts->where('lang', $this->langMain), 0);
+				$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts, 0);
 			}
 
 			$data['submit_label'] = "Create";
@@ -130,7 +130,7 @@ class MenuController extends Controller {
 		try {
 			$data['post'] = $this->postRepository->find($id);
 			$data['term'] = $data['post']->terms()->where('taxonomy', $this->taxonomy)->first();
-			$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts->where('lang', $this->langMain), $id);
+			$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts, $id);
 			$data['submit_label'] = "Update";
 			$data['meta'] = $this->postRepository->getMeta($data['post']->postMetas);
 			$data['meta']['box_sidebars'] = $this->postRepository->getMultiMetaByKey($data['post']->postMetas, 'box_sidebar');
