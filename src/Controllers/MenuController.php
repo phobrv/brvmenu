@@ -57,12 +57,7 @@ class MenuController extends Controller {
 			$data['lang'] = $this->langMain;
 			$data['arrayMenuParent'] = [];
 			if ($data['term']) {
-				$langArray = $this->configLangService->getArrayLangConfig();
 				$data['menus'] = $this->handleMenuService->handleMenuItem($data['term']->posts()->where('lang', $this->langMain)->orderBy('order')->get());
-				foreach ($data['menus'] as $key => $post) {
-					$data['menus'][$key]->langButtons = $this->configLangService->genLangButton($post->id, $langArray);
-				}
-
 				$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts->where('lang', $this->langMain), 0);
 			}
 

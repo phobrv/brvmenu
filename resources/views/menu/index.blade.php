@@ -121,7 +121,7 @@
 								@endif
 							</td>
 							<td align="center">
-								{!! $r->langButtons !!}
+								{!! $r->langButtons ?? '' !!}
 							</td>
 							<td align="center">
 								<a href="{{route('menu.changeOrder',['menu'=>$r->id,'type'=>'plus'])}}"> <i class="fa fa-fw fa-chevron-circle-up"></i>
@@ -162,6 +162,9 @@
 								@else
 								<i style="color: red;" class="fa fa-times-circle-o" aria-hidden="true"></i>
 								@endif
+							</td>
+							<td align="center">
+								{!! $c->langButtons ?? '' !!}
 							</td>
 							<td align="center">
 								<a href="{{route('menu.changeOrder',['menu'=>$c->id,'type'=>'plus'])}}">

@@ -1,17 +1,24 @@
 <?php
 namespace Phobrv\BrvMenu\Services;
+use Phobrv\BrvConfigs\Services\ConfigLangService;
 use Phobrv\BrvCore\Repositories\PostRepository;
 use Phobrv\BrvCore\Repositories\TermRepository;
 
 class HandleMenuServices {
 	protected $termRepository;
+	protected $configLangService;
 	protected $postRepository;
+	protected $langMain;
+
 	public function __construct(
+		ConfigLangService $configLangService,
 		PostRepository $postRepository,
 		TermRepository $termRepository
 	) {
+		$this->configLangService = $configLangService;
 		$this->termRepository = $termRepository;
 		$this->postRepository = $postRepository;
+		$this->langMain = $configLangService->getMainLang();
 	}
 	public function getMenus($configs, $menu_key, $disablePrivateMenu = NULL) {
 		if (!isset($configs[$menu_key])) {
@@ -24,6 +31,7 @@ class HandleMenuServices {
 
 		$menus = array();
 		$curRequest = str_replace("/", "", $_SERVER['REQUEST_URI']);
+		$langArray = $this->configLangService->getArrayLangConfig();
 		foreach ($posts as $p) {
 			if ($disablePrivateMenu == NULL || $p->status == 1) {
 
@@ -31,12 +39,12 @@ class HandleMenuServices {
 				$p->url = $this->handleUrlMenu($p);
 				$icon = $p->postMetas->where('key', 'icon')->first();
 				$p->icon = isset($icon->value) ? $icon->value : '';
-
+				$p->langButtons = $this->configLangService->genLangButton($p->id, $langArray);
 				if ($p->parent == 0) {
 					if ($disablePrivateMenu != NULL) {
-						$childs = $this->postRepository->where('parent', $p->id)->where('status', '1')->orderBy('order')->get();
+						$childs = $this->postRepository->where('parent', $p->id)->where('status', '1')->where('lang', $this->langMain)->orderBy('order')->get();
 					} else {
-						$childs = $this->postRepository->where('parent', $p->id)->orderBy('order')->get();
+						$childs = $this->postRepository->where('parent', $p->id)->orderBy('order')->where('lang', $this->langMain)->get();
 					}
 
 					if ($childs) {
@@ -45,6 +53,7 @@ class HandleMenuServices {
 						}
 						for ($i = 0; $i < count($childs); $i++) {
 							$childs[$i]->url = $this->handleUrlMenu($childs[$i]);
+							$childs[$i]->langButtons = $this->configLangService->genLangButton($childs[$i]->id, $langArray);
 						}
 						$p->childs = $childs;
 					}
