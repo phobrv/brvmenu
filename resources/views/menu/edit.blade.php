@@ -4,6 +4,7 @@
 <a href="{{route('menu.index')}}"  class="btn btn-default float-left">
 	<i class="fa fa-backward"></i> @lang('Back')
 </a>
+{!! $data['boxTranslate'] ?? '' !!}
 @endsection
 
 @section('content')

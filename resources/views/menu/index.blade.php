@@ -41,6 +41,7 @@
 				</div>
 				<div class="box-body">
 					<input type="hidden" name="type" value="menu">
+					<input type="hidden" name="lang" value="{{ $data['lang'] ?? 'vi' }}">
 					<input type="hidden" name="term_id" value="{{$data['term']->id}}">
 					@csrf
 					<div class="form-group">

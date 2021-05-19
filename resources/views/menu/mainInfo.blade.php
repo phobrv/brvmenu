@@ -23,11 +23,16 @@
 			@endif
 			@endif
 			@include('phobrv::input.inputText',['label'=>'Name','key'=>'title','required'=>true])
-
+			@if($data['post']->lang == $langMain)
 			@if(isset($data['post']['childs']) && count($data['post']['childs']) == 0 || !isset($data['post']['childs']) )
 			@include('phobrv::input.inputSelect',['label'=>'Parent','key'=>'parent','array'=>$data['arrayMenuParent']])
 			@endif
 			@include('phobrv::input.inputSelect',['label'=>'Template','key'=>'subtype','array'=>$templateMenu])
+			@else
+			@include('phobrv::input.text',['label'=>'Parent','value'=>$data['arrayMenuParent'][$data['post']->parent]])
+			@include('phobrv::input.text',['label'=>'Template','value'=>$templateMenu[$data['post']->subtype]])
+
+			@endif
 			@if($data['post']->subtype != 'link')
 			<label>Seo Meta</label>
 			@include('phobrv::input.inputFile',['label'=>'Thumb Meta','key'=>'thumb','width'=>'200px'])

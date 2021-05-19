@@ -58,6 +58,7 @@ class MenuController extends Controller {
 
 		try {
 			$data['term'] = $this->termRepository->findWhere(['id' => $data['select']])->first();
+			$data['lang'] = $this->langMain;
 			$data['arrayMenuParent'] = [];
 			if ($data['term']) {
 				$langArray = $this->configLangService->getArrayLangConfig();
@@ -122,7 +123,7 @@ class MenuController extends Controller {
 			$data['type'] = $this->type;
 			$menu_item = $this->postRepository->create($data);
 			$menu_item->terms()->sync($data['term_id']);
-
+			$this->configLangService->createTermLang($menu_item);
 			$this->handleSeoMeta($menu_item, $data);
 
 			$msg = __('Create menu success!');
@@ -160,12 +161,12 @@ class MenuController extends Controller {
 		try {
 			$data['post'] = $this->postRepository->find($id);
 			$data['term'] = $data['post']->terms()->where('taxonomy', $this->taxonomy)->first();
-
 			$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts, $id);
 			$data['submit_label'] = "Update";
 			$data['meta'] = $this->postRepository->getMeta($data['post']->postMetas);
 			$data['meta']['box_sidebars'] = $this->postRepository->getMultiMetaByKey($data['post']->postMetas, 'box_sidebar');
 			$data['post']['childs'] = $this->postRepository->findChilds($id);
+			$data['boxTranslate'] = $this->configLangService->genLangTranslateBox($data['post']);
 			return view('phobrv::menu.edit')->with('data', $data);
 		} catch (Exception $e) {
 			return back()->with('alert_danger', $e->getMessage());
@@ -193,7 +194,7 @@ class MenuController extends Controller {
 		try {
 			$menuItemData = $request->all();
 			$menu_item = $this->postRepository->update($menuItemData, $item_id);
-
+			$this->configLangService->syncMenuLangGroup($menu_item);
 			$this->handleSeoMeta($menu_item, $menuItemData);
 
 			$msg = __('Update menu success!');
@@ -306,7 +307,7 @@ class MenuController extends Controller {
 	 */
 	public function destroy($id) {
 		$menus = $this->postRepository->find($id)->terms;
-		$this->postRepository->destroy($id);
+		$this->postRepository->destroyAllLang($id);
 		$msg = __('Delete menu item success!');
 		return redirect()->route('menu.index', ['menu' => $menus[0]->id])->with('alert_success', $msg);
 	}
