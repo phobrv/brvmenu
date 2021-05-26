@@ -42,9 +42,9 @@ class HandleMenuServices {
 				$p->langButtons = $this->configLangService->genLangButton($p->id, $langArray);
 				if ($p->parent == 0) {
 					if ($disablePrivateMenu != NULL) {
-						$childs = $this->postRepository->where('parent', $p->id)->where('status', '1')->where('lang')->orderBy('order')->get();
+						$childs = $this->postRepository->where('parent', $p->id)->where('status', '1')->orderBy('order')->get();
 					} else {
-						$childs = $this->postRepository->where('parent', $p->id)->orderBy('order')->where('lang')->get();
+						$childs = $this->postRepository->where('parent', $p->id)->orderBy('order')->get();
 					}
 
 					if ($childs) {
