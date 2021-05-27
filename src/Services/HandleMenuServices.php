@@ -75,7 +75,7 @@ class HandleMenuServices {
 	}
 	public function handleUrlMenu($p) {
 		$url = "";
-		if ($p->subtype == "home" && $p->lang == config('app.locale')) {
+		if ($p->subtype == "home" && $p->lang == config('option.langMain')) {
 			$url = route('home');
 		} elseif ($p->subtype == "link") {
 			$url = $p->excerpt;
