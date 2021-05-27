@@ -8,7 +8,6 @@ class HandleMenuServices {
 	protected $termRepository;
 	protected $configLangService;
 	protected $postRepository;
-	protected $langMain;
 
 	public function __construct(
 		ConfigLangService $configLangService,
@@ -18,13 +17,12 @@ class HandleMenuServices {
 		$this->configLangService = $configLangService;
 		$this->termRepository = $termRepository;
 		$this->postRepository = $postRepository;
-		$this->langMain = $configLangService->getMainLang();
 	}
 	public function getMenus($configs, $menu_key, $disablePrivateMenu = NULL) {
 		if (!isset($configs[$menu_key])) {
 			return "";
 		}
-		$posts = $this->termRepository->find($configs[$menu_key])->posts()->orderBy('order')->with('postMetas')->get();
+		$posts = $this->termRepository->find($configs[$menu_key])->posts()->where('lang', \App::getLocale())->orderBy('order')->with('postMetas')->get();
 		return $this->handleMenuItem($posts, $disablePrivateMenu);
 	}
 	public function handleMenuItem($posts, $disablePrivateMenu = NULL) {
