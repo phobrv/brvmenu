@@ -51,7 +51,6 @@ class MenuController extends Controller {
 			]
 		);
 		$data['select'] = $this->userRepository->getMetaValueByKey($user, 'menu_select');
-
 		try {
 			$data['term'] = $this->termRepository->findWhere(['id' => $data['select']])->first();
 			$data['lang'] = $this->langMain;

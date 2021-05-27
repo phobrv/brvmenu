@@ -8,7 +8,7 @@ class HandleMenuServices {
 	protected $termRepository;
 	protected $configLangService;
 	protected $postRepository;
-
+	protected $langMain;
 	public function __construct(
 		ConfigLangService $configLangService,
 		PostRepository $postRepository,
@@ -17,6 +17,7 @@ class HandleMenuServices {
 		$this->configLangService = $configLangService;
 		$this->termRepository = $termRepository;
 		$this->postRepository = $postRepository;
+		$this->langMain = $configLangService->getMainLang();
 	}
 	public function getMenus($configs, $menu_key, $disablePrivateMenu = NULL) {
 		if (!isset($configs[$menu_key])) {
@@ -40,9 +41,9 @@ class HandleMenuServices {
 				$p->langButtons = $this->configLangService->genLangButton($p->id, $langArray);
 				if ($p->parent == 0) {
 					if ($disablePrivateMenu != NULL) {
-						$childs = $this->postRepository->where('parent', $p->id)->where('status', '1')->orderBy('order')->get();
+						$childs = $this->postRepository->where('parent', $p->id)->where('status', '1')->where('lang', $this->langMain)->orderBy('order')->get();
 					} else {
-						$childs = $this->postRepository->where('parent', $p->id)->orderBy('order')->get();
+						$childs = $this->postRepository->where('parent', $p->id)->where('lang', $this->langMain)->orderBy('order')->get();
 					}
 
 					if ($childs) {
