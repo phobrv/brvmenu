@@ -8,6 +8,7 @@ use Phobrv\BrvCore\Repositories\PostRepository;
 use Phobrv\BrvCore\Repositories\TermRepository;
 use Phobrv\BrvCore\Repositories\UserRepository;
 use Phobrv\BrvCore\Services\UnitServices;
+use Phobrv\BrvCore\Services\VString;
 use Phobrv\BrvMenu\Services\HandleMenuServices;
 
 class MenuController extends Controller {
@@ -19,14 +20,17 @@ class MenuController extends Controller {
 	protected $handleMenuService;
 	protected $type;
 	protected $taxonomy;
+	protected $vstring;
 
 	public function __construct(
+		VString $vstring,
 		UserRepository $userRepository,
 		TermRepository $termRepository,
 		PostRepository $postRepository,
 		HandleMenuServices $handleMenuService,
 		UnitServices $unitService
 	) {
+		$this->vstring = $vstring;
 		$this->handleMenuService = $handleMenuService;
 		$this->userRepository = $userRepository;
 		$this->postRepository = $postRepository;
@@ -89,9 +93,10 @@ class MenuController extends Controller {
 	public function store(Request $request) {
 		$user = Auth::user();
 		if ($request->subtype == 'link') {
-			$request->request->add(['slug' => $this->unitService->renderSlug($request->title) . "-" . rand(0, 9999)]);
+			$request->merge(['slug' => $this->vstring->standardKeyword($request->title) . "-" . rand(0, 9999)]);
+
 		} else {
-			$request->request->add(['slug' => $this->unitService->renderSlug($request->title)]);
+			$request->merge(['slug' => $this->vstring->standardKeyword($request->title)]);
 		}
 
 		$request->validate(
