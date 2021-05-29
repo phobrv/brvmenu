@@ -42,7 +42,7 @@ class MenuController extends Controller {
 		$this->termRepository = $termRepository;
 		$this->unitService = $unitService;
 		$this->type = config('option.post_type.menu_item');
-		$this->taxonomy = config('option.taxonomy.menugroup');
+		$this->taxonomy = config('term.taxonomy.menugroup');
 		$this->langMain = $configLangService->getMainLang();
 	}
 
