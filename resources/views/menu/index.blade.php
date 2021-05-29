@@ -41,6 +41,7 @@
 				</div>
 				<div class="box-body">
 					<input type="hidden" name="type" value="menu">
+					<input type="hidden" name="lang" value="{{ $data['lang'] ?? 'vi' }}">
 					<input type="hidden" name="term_id" value="{{$data['term']->id}}">
 					@csrf
 					<div class="form-group">
@@ -90,6 +91,7 @@
 							<th>{{__('Name')}}</th>
 							<th class="text-center">{{__('Type')}}</th>
 							<th class="text-center">{{__('Status')}}</th>
+							<th class="text-center">{{__('Lang')}}</th>
 							<th class="text-center">{{__('Change Order')}}</th>
 							<th class="text-center">{{__('Action')}}</th>
 						</tr>
@@ -119,6 +121,9 @@
 								@endif
 							</td>
 							<td align="center">
+								{!! $r->langButtons ?? '' !!}
+							</td>
+							<td align="center">
 								<a href="{{route('menu.changeOrder',['menu'=>$r->id,'type'=>'plus'])}}"> <i class="fa fa-fw fa-chevron-circle-up"></i>
 								</a>
 
@@ -143,7 +148,11 @@
 						@foreach($r->childs as $c)
 						<tr>
 							<td align="center">{{$loop->index + 1}}</td>
-							<td style="padding-left: 30px;">{{$c->title}}</td>
+							<td style="padding-left: 30px;">
+								<a href="{{ route('level1',['slug'=>$c->slug]) }}">
+									{{$c->title}}
+								</a>
+							</td>
 							<td align="center">
 								@isset($templateMenu[$c->subtype])
 								{{ $templateMenu[$c->subtype] }}
@@ -157,6 +166,9 @@
 								@else
 								<i style="color: red;" class="fa fa-times-circle-o" aria-hidden="true"></i>
 								@endif
+							</td>
+							<td align="center">
+								{!! $c->langButtons ?? '' !!}
 							</td>
 							<td align="center">
 								<a href="{{route('menu.changeOrder',['menu'=>$c->id,'type'=>'plus'])}}">

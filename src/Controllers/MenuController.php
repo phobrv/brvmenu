@@ -4,6 +4,7 @@ namespace Phobrv\BrvMenu\Controllers;
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Http\Request;
+use Phobrv\BrvConfigs\Services\ConfigLangService;
 use Phobrv\BrvCore\Repositories\PostRepository;
 use Phobrv\BrvCore\Repositories\TermRepository;
 use Phobrv\BrvCore\Repositories\UserRepository;
@@ -22,12 +23,15 @@ class MenuController extends Controller {
 	protected $taxonomy;
 	protected $vstring;
 
+	protected $configLangService;
+	protected $langMain;
 	public function __construct(
 		VString $vstring,
 		UserRepository $userRepository,
 		TermRepository $termRepository,
 		PostRepository $postRepository,
 		HandleMenuServices $handleMenuService,
+		ConfigLangService $configLangService,
 		UnitServices $unitService
 	) {
 		$this->vstring = $vstring;
@@ -38,12 +42,9 @@ class MenuController extends Controller {
 		$this->unitService = $unitService;
 		$this->type = config('option.post_type.menu_item');
 		$this->taxonomy = config('option.taxonomy.menugroup');
+		$this->langMain = $configLangService->getMainLang();
 	}
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
+
 	public function index() {
 
 		$user = Auth::user();
@@ -54,12 +55,12 @@ class MenuController extends Controller {
 			]
 		);
 		$data['select'] = $this->userRepository->getMetaValueByKey($user, 'menu_select');
-
 		try {
 			$data['term'] = $this->termRepository->findWhere(['id' => $data['select']])->first();
+			$data['lang'] = $this->langMain;
 			$data['arrayMenuParent'] = [];
 			if ($data['term']) {
-				$data['menus'] = $this->handleMenuService->handleMenuItem($data['term']->posts()->orderBy('order')->get());
+				$data['menus'] = $this->handleMenuService->handleMenuItem($data['term']->posts()->where('lang', $this->langMain)->orderBy('order')->get());
 				$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts, 0);
 			}
 
@@ -75,21 +76,10 @@ class MenuController extends Controller {
 		return redirect()->route('menu.index');
 	}
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
 	public function create() {
 		//
 	}
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @return \Illuminate\Http\Response
-	 */
 	public function store(Request $request) {
 		$user = Auth::user();
 		if ($request->subtype == 'link') {
@@ -110,6 +100,7 @@ class MenuController extends Controller {
 			]
 		);
 		try {
+
 			$data = $request->all();
 			$menu = $this->termRepository->find($data['term_id']);
 			$data['order'] = ($menu->posts->count() > 0) ? (($menu->posts->sortByDesc('order')->first()['order']) + 1) : 1;
@@ -118,7 +109,7 @@ class MenuController extends Controller {
 			$data['type'] = $this->type;
 			$menu_item = $this->postRepository->create($data);
 			$menu_item->terms()->sync($data['term_id']);
-
+			$this->configLangService->createTermLang($menu_item);
 			$this->handleSeoMeta($menu_item, $data);
 
 			$msg = __('Create menu success!');
@@ -129,22 +120,10 @@ class MenuController extends Controller {
 		}
 	}
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function show($id) {
 		//
 	}
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function edit($id) {
 		$data['breadcrumbs'] = $this->unitService->generateBreadcrumbs(
 			[
@@ -152,29 +131,21 @@ class MenuController extends Controller {
 				['text' => 'Edit Menu Item', 'href' => ''],
 			]
 		);
-
 		try {
 			$data['post'] = $this->postRepository->find($id);
 			$data['term'] = $data['post']->terms()->where('taxonomy', $this->taxonomy)->first();
-
 			$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts, $id);
 			$data['submit_label'] = "Update";
 			$data['meta'] = $this->postRepository->getMeta($data['post']->postMetas);
 			$data['meta']['box_sidebars'] = $this->postRepository->getMultiMetaByKey($data['post']->postMetas, 'box_sidebar');
 			$data['post']['childs'] = $this->postRepository->findChilds($id);
+			$data['boxTranslate'] = $this->configLangService->genLangTranslateBox($data['post']);
 			return view('phobrv::menu.edit')->with('data', $data);
 		} catch (Exception $e) {
 			return back()->with('alert_danger', $e->getMessage());
 		}
 	}
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function update(Request $request, $item_id) {
 		$request->validate(
 			[
@@ -189,7 +160,7 @@ class MenuController extends Controller {
 		try {
 			$menuItemData = $request->all();
 			$menu_item = $this->postRepository->update($menuItemData, $item_id);
-
+			$this->configLangService->syncMenuLangGroup($menu_item);
 			$this->handleSeoMeta($menu_item, $menuItemData);
 
 			$msg = __('Update menu success!');
@@ -294,15 +265,9 @@ class MenuController extends Controller {
 		return $data['meta_id'];
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function destroy($id) {
 		$menus = $this->postRepository->find($id)->terms;
-		$this->postRepository->destroy($id);
+		$this->postRepository->destroyAllLang($id);
 		$msg = __('Delete menu item success!');
 		return redirect()->route('menu.index', ['menu' => $menus[0]->id])->with('alert_success', $msg);
 	}
