@@ -22,9 +22,9 @@ class MenuController extends Controller {
 	protected $type;
 	protected $taxonomy;
 	protected $vstring;
-
 	protected $configLangService;
 	protected $langMain;
+
 	public function __construct(
 		VString $vstring,
 		UserRepository $userRepository,
@@ -36,6 +36,7 @@ class MenuController extends Controller {
 	) {
 		$this->vstring = $vstring;
 		$this->handleMenuService = $handleMenuService;
+		$this->configLangService = $configLangService;
 		$this->userRepository = $userRepository;
 		$this->postRepository = $postRepository;
 		$this->termRepository = $termRepository;
@@ -107,10 +108,10 @@ class MenuController extends Controller {
 			$data['user_id'] = $user->id;
 			$data['status'] = config('option.post_status.publish');
 			$data['type'] = $this->type;
-			$menu_item = $this->postRepository->create($data);
-			$menu_item->terms()->sync($data['term_id']);
-			$this->configLangService->createTermLang($menu_item);
-			$this->handleSeoMeta($menu_item, $data);
+			$post = $this->postRepository->create($data);
+			$this->configLangService->createTermLang($post);
+			$post->terms()->sync($data['term_id']);
+			$this->handleSeoMeta($post, $data);
 
 			$msg = __('Create menu success!');
 			return redirect()->route('menu.index')->with('alert_success', $msg);
