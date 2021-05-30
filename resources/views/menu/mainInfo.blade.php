@@ -29,11 +29,11 @@
 			@endif
 
 			@if($data['post']->lang == $langMain)
-			@include('phobrv::input.inputSelect',['label'=>'Template','key'=>'subtype','array'=>$templateMenu])
+			@include('phobrv::input.inputSelect',['label'=>'Template','key'=>'subtype','array'=>config('option.templateMenu')])
 			@else
 			<i>Menu không phải ngôn ngữ chính sẽ kế thừa các thuộc tính này từ menu gốc</i>
 			<input type="hidden" name="subtype" value="{{ $data['post']->subtype }}">
-			@include('phobrv::input.text',['label'=>'Template','value'=>$templateMenu[$data['post']->subtype]])
+			@include('phobrv::input.text',['label'=>'Template','value'=>config('option.templateMenu')[$data['post']->subtype]])
 			@endif
 			@if($data['post']->subtype != 'link')
 			<label>Seo Meta</label>

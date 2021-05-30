@@ -65,7 +65,7 @@
 					@endif
 					<label>Choose template menu</label>
 					<div class="form-group">
-						{{Form::select('subtype', $templateMenu,(isset($data['post']->subtype) ? $data['post']->subtype : '0'),array('class'=>'form-control'))}}
+						{{Form::select('subtype', config('option.templateMenu'),(isset($data['post']->subtype) ? $data['post']->subtype : '0'),array('class'=>'form-control'))}}
 						@if ($errors->has('subtype'))
 						<span class="invalid-feed" role="alert">
 							<strong>{{ $errors->first('subtype') }}</strong>
@@ -107,8 +107,8 @@
 								</a>
 							</td>
 							<td align="center">
-								@isset($templateMenu[$r->subtype])
-								{{ $templateMenu[$r->subtype] }}
+								@isset(config('option.templateMenu')[$r->subtype])
+								{{ config('option.templateMenu')[$r->subtype] }}
 								@else
 								{{$r->subtype}}
 								@endif
@@ -154,8 +154,8 @@
 								</a>
 							</td>
 							<td align="center">
-								@isset($templateMenu[$c->subtype])
-								{{ $templateMenu[$c->subtype] }}
+								@isset(config('option.templateMenu')[$c->subtype])
+								{{ config('option.templateMenu')[$c->subtype] }}
 								@else
 								{{$c->subtype}}
 								@endif
