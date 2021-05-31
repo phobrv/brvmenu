@@ -133,7 +133,7 @@
 									<a href="{{route('menu.edit',array('menu'=>$r->id))}}"><i class="fa fa-edit" title="Sửa"></i></a>
 									@if(count($r->childs) == 0)
 									&nbsp;&nbsp;&nbsp;
-									<a style="color: red" href="#" onclick="destroy('{{ route('menu.destroy',array('menu'=>$r->id)) }}')"><i class="fa fa-times" title="Sửa"></i></a>
+									<a style="color: red" href="#" onclick="destroy('{{ route('menu.destroy',['menu'=>$r->id]) }}')"><i class="fa fa-times" title="Sửa"></i></a>
 									@endif
 								</td>
 							</tr>
@@ -201,15 +201,18 @@
 @section('scripts')
 <script type="text/javascript">
 	function destroy(url){
+		console.log(url)
 		var anwser =  confirm("Bạn muốn menu item này?");
 		if(anwser){
 			event.preventDefault();
 			$.ajax({
-				type: "DELETE",
+				headers : { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+				method: "delete",
 				url: url,
-				success: function (res) {
-					location.reload()
-				}
+			}).done(function(output) {
+				location.reload()
+			}).fail(function(jqXHR, textStatus, errorThrown) {
+				location.reload()
 			});
 		}
 	}
