@@ -8,6 +8,8 @@ Route::middleware(['web', 'auth', 'auth:sanctum', 'lang', 'verified'])->namespac
 Route::middleware(['web', 'auth', 'auth:sanctum', 'lang', 'verified'])->namespace('Phobrv\BrvMenu\Controllers')->group(function () {
 	Route::middleware(['can:menu_manage'])->prefix('admin')->group(function () {
 		Route::resource('menu', 'MenuController');
+		Route::post('/menu/update/updateOrder', 'MenuController@updateOrder')->name('menu.updateOrder');
+
 		Route::get('/menu/setMenuGroupSelect/{id}', 'MenuController@setMenuGroupSelect')->name('menu.setMenuGroupSelect');
 
 		Route::post('/menu/updateContent/{menu}', 'MenuController@updateContent')->name('menu.updateContent');

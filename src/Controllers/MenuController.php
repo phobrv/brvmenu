@@ -106,7 +106,7 @@ class MenuController extends Controller {
 			$menu = $this->termRepository->find($data['term_id']);
 			$data['order'] = ($menu->posts->count() > 0) ? (($menu->posts->sortByDesc('order')->first()['order']) + 1) : 1;
 			$data['user_id'] = $user->id;
-			$data['status'] = config('option.post_status.publish');
+			$data['status'] = config('brvcore.post_status.publish');
 			$data['type'] = $this->type;
 			$post = $this->postRepository->create($data);
 			$this->configLangService->createTermLang($post);
@@ -272,7 +272,13 @@ class MenuController extends Controller {
 		$msg = __('Delete menu item success!');
 		return redirect()->route('menu.index', ['menu' => $menus[0]->id])->with('alert_success', $msg);
 	}
-
+	public function updateOrder(Request $request) {
+		$data = $request->all();
+		foreach ($data['id'] as $key => $value) {
+			$this->postRepository->update(['order' => $data['order'][$key]], $value);
+		}
+		return redirect()->route('menu.index')->with('alert_success', "Update order success");
+	}
 	public function changeOrder(Request $request, $menu_id, $type) {
 
 		$menu = $this->postRepository->find($menu_id);

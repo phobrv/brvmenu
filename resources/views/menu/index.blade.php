@@ -83,119 +83,103 @@
 	<div class="col-md-7">
 		<div class="box box-primary">
 			<div class="box-body">
+				<form action="{{ route('menu.updateOrder') }}" method="post">
+					@csrf
+					<table id="" class="table table-bordered table-striped">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>{{__('Name')}}</th>
+								<th class="text-center">{{__('Type')}}</th>
+								<th class="text-center">{{__('Status')}}</th>
+								<th class="text-center">{{__('Lang')}}</th>
+								<th class="text-center"> <button type="subit" class="btn btn-primary">Submit Order</button> </th>
+								<th class="text-center">{{__('Action')}}</th>
+							</tr>
+						</thead>
+						<tbody>
+							@isset($data['menus'])
+							@foreach($data['menus'] as  $r)
+							<tr>
+								<td>{{$loop->index + 1}}</td>
+								<td>
+									<a href="{{ route('level1',['slug'=>$r->slug]) }}">
+										{{$r->title}}
+									</a>
+								</td>
+								<td align="center">
+									@isset(config('option.templateMenu')[$r->subtype])
+									{{ config('option.templateMenu')[$r->subtype] }}
+									@else
+									{{$r->subtype}}
+									@endif
+								</td>
+								<td align="center">
+									@if(isset($r->status) && $r->status == 1 )
+									<i style="color: green;" class="fa fa-check-circle-o" aria-hidden="true"></i>
+									@else
+									<i style="color: red;" class="fa fa-times-circle-o" aria-hidden="true"></i>
+									@endif
+								</td>
+								<td align="center">
+									{!! $r->langButtons ?? '' !!}
+								</td>
+								<td >
+									<input type="hidden" name="id[]" value="{{ $r->id }}">
+									<input type="number" class="order_input" name="order[]" value="{{ $r->order }}">
+								</td>
+								<td align="center">
 
-				<table id="" class="table table-bordered table-striped">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>{{__('Name')}}</th>
-							<th class="text-center">{{__('Type')}}</th>
-							<th class="text-center">{{__('Status')}}</th>
-							<th class="text-center">{{__('Lang')}}</th>
-							<th class="text-center">{{__('Change Order')}}</th>
-							<th class="text-center">{{__('Action')}}</th>
-						</tr>
-					</thead>
-					<tbody>
-						@isset($data['menus'])
-						@foreach($data['menus'] as  $r)
-						<tr>
-							<td>{{$loop->index + 1}}</td>
-							<td>
-								<a href="{{ route('level1',['slug'=>$r->slug]) }}">
-									{{$r->title}}
-								</a>
-							</td>
-							<td align="center">
-								@isset(config('option.templateMenu')[$r->subtype])
-								{{ config('option.templateMenu')[$r->subtype] }}
-								@else
-								{{$r->subtype}}
-								@endif
-							</td>
-							<td align="center">
-								@if(isset($r->status) && $r->status == 1 )
-								<i style="color: green;" class="fa fa-check-circle-o" aria-hidden="true"></i>
-								@else
-								<i style="color: red;" class="fa fa-times-circle-o" aria-hidden="true"></i>
-								@endif
-							</td>
-							<td align="center">
-								{!! $r->langButtons ?? '' !!}
-							</td>
-							<td align="center">
-								<a href="{{route('menu.changeOrder',['menu'=>$r->id,'type'=>'plus'])}}"> <i class="fa fa-fw fa-chevron-circle-up"></i>
-								</a>
-
-								<a href="{{route('menu.changeOrder',['menu'=>$r->id,'type'=>'minus'])}}">
-									<i class="fa fa-fw fa-chevron-circle-down"></i>
-								</a>
-							</td>
-							<td align="center">
-
-								<a href="{{route('menu.edit',array('menu'=>$r->id))}}"><i class="fa fa-edit" title="Sửa"></i></a>
-								@if(count($r->childs) == 0)
-								&nbsp;&nbsp;&nbsp;
-								<a style="color: red" href="#" onclick="destroy('destroy{{$r->id}}')"><i class="fa fa-times" title="Sửa"></i></a>
-								<form id="destroy{{$r->id}}" action="{{ route('menu.destroy',array('menu'=>$r->id)) }}" method="post" style="display: none;">
-									@method('delete')
-									@csrf
-								</form>
-								@endif
-							</td>
-						</tr>
-						@if($r->childs)
-						@foreach($r->childs as $c)
-						<tr>
-							<td align="center">{{$loop->index + 1}}</td>
-							<td style="padding-left: 30px;">
-								<a href="{{ route('level1',['slug'=>$c->slug]) }}">
-									{{$c->title}}
-								</a>
-							</td>
-							<td align="center">
-								@isset(config('option.templateMenu')[$c->subtype])
-								{{ config('option.templateMenu')[$c->subtype] }}
-								@else
-								{{$c->subtype}}
-								@endif
-							</td>
-							<td align="center">
-								@if(isset($c->status) && $c->status == 1 )
-								<i style="color: green;" class="fa fa-check-circle-o" aria-hidden="true"></i>
-								@else
-								<i style="color: red;" class="fa fa-times-circle-o" aria-hidden="true"></i>
-								@endif
-							</td>
-							<td align="center">
-								{!! $c->langButtons ?? '' !!}
-							</td>
-							<td align="center">
-								<a href="{{route('menu.changeOrder',['menu'=>$c->id,'type'=>'plus'])}}">
-									<i class="fa fa-fw fa-chevron-circle-up"></i>
-								</a>
-
-								<a href="{{route('menu.changeOrder',['menu'=>$c->id,'type'=>'minus'])}}">
-									<i class="fa fa-fw fa-chevron-circle-down"></i>
-								</a>
-							</td>
-							<td align="center">
-								<a href="{{route('menu.edit',array('menu'=>$c->id))}}"><i class="fa fa-edit" title="Sửa"></i></a>
-								&nbsp;&nbsp;&nbsp;
-								<a style="color: red" href="#" onclick="destroy('destroy{{$c->id}}')"><i class="fa fa-times" title="Sửa"></i></a>
-								<form id="destroy{{$c->id}}" action="{{ route('menu.destroy',array('menu'=>$c->id)) }}" method="post" style="display: none;">
-									@method('delete')
-									@csrf
-								</form>
-							</td>
-						</tr>
-						@endforeach
-						@endif
-						@endforeach
-						@endif
-					</tbody>
-
-				</table>
+									<a href="{{route('menu.edit',array('menu'=>$r->id))}}"><i class="fa fa-edit" title="Sửa"></i></a>
+									@if(count($r->childs) == 0)
+									&nbsp;&nbsp;&nbsp;
+									<a style="color: red" href="#" onclick="destroy('{{ route('menu.destroy',array('menu'=>$r->id)) }}')"><i class="fa fa-times" title="Sửa"></i></a>
+									@endif
+								</td>
+							</tr>
+							@if($r->childs)
+							@foreach($r->childs as $c)
+							<tr>
+								<td align="center">{{$loop->index + 1}}</td>
+								<td style="padding-left: 30px;">
+									<a href="{{ route('level1',['slug'=>$c->slug]) }}">
+										{{$c->title}}
+									</a>
+								</td>
+								<td align="center">
+									@isset(config('option.templateMenu')[$c->subtype])
+									{{ config('option.templateMenu')[$c->subtype] }}
+									@else
+									{{$c->subtype}}
+									@endif
+								</td>
+								<td align="center">
+									@if(isset($c->status) && $c->status == 1 )
+									<i style="color: green;" class="fa fa-check-circle-o" aria-hidden="true"></i>
+									@else
+									<i style="color: red;" class="fa fa-times-circle-o" aria-hidden="true"></i>
+									@endif
+								</td>
+								<td align="center">
+									{!! $c->langButtons ?? '' !!}
+								</td>
+								<td style="padding-left: 40px;">
+									<input type="hidden" name="id[]" value="{{ $c->id }}">
+									<input type="number" class="order_input" name="order[]" value="{{ $c->order }}">
+								</td>
+								<td align="center">
+									<a href="{{route('menu.edit',array('menu'=>$c->id))}}"><i class="fa fa-edit" title="Sửa"></i></a>
+									&nbsp;&nbsp;&nbsp;
+									<a style="color: red" href="#" onclick="destroy('{{ route('menu.destroy',array('menu'=>$c->id)) }}')"><i class="fa fa-times" title="Sửa"></i></a>
+								</td>
+							</tr>
+							@endforeach
+							@endif
+							@endforeach
+							@endif
+						</tbody>
+					</table>
+				</form>
 			</div>
 		</div>
 	</div>
@@ -205,16 +189,28 @@
 @endsection
 
 @section('styles')
-
+<style type="text/css">
+.order_input{
+	width: 60px;
+	padding:  2px;
+	text-align: center;
+}
+</style>
 @endsection
 
 @section('scripts')
 <script type="text/javascript">
-	function destroy(form){
+	function destroy(url){
 		var anwser =  confirm("Bạn muốn menu item này?");
 		if(anwser){
 			event.preventDefault();
-			document.getElementById(form).submit();
+			$.ajax({
+				type: "DELETE",
+				url: url,
+				success: function (res) {
+					location.reload()
+				}
+			});
 		}
 	}
 </script>
