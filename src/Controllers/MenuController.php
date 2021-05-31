@@ -110,7 +110,7 @@ class MenuController extends Controller {
 			$data['type'] = $this->type;
 			$post = $this->postRepository->create($data);
 			$this->configLangService->createTermLang($post);
-			$post->terms()->sync($data['term_id']);
+			$post->terms()->attach($data['term_id']);
 			$this->handleSeoMeta($post, $data);
 
 			$msg = __('Create menu success!');
