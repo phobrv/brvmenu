@@ -24,23 +24,25 @@ class HandleMenuServices {
 			return "";
 		}
 		$posts = $this->termRepository->find($configs[$menu_key])->posts()->where('lang', config('app.locale'))->orderBy('order')->with('postMetas')->get();
-		return $this->handleMenuItem($posts, $disablePrivateMenu);
+		return $this->handleMenuItem($posts, ['disablePrivateMenu' => $disablePrivateMenu]);
 	}
-	public function handleMenuItem($posts, $disablePrivateMenu = NULL) {
-
+	public function handleMenuItem($posts, $option = []) {
 		$menus = array();
 		$curRequest = str_replace("/", "", $_SERVER['REQUEST_URI']);
 		$langArray = $this->configLangService->getArrayLangConfig();
 		foreach ($posts as $p) {
-			if ($disablePrivateMenu == NULL || $p->status == 1) {
+			if (isset($option['disablePrivateMenu']) || $p->status == 1) {
 
 				$p->active = $this->handleMenuAcitve($p, $curRequest);
 				$p->url = $this->handleUrlMenu($p);
 				$icon = $p->postMetas->where('key', 'icon')->first();
 				$p->icon = isset($icon->value) ? $icon->value : '';
-				$p->langButtons = $this->configLangService->genLangButton($p->id, $langArray);
+				if (isset($option['langButton'])) {
+					$p->langButtons = $this->configLangService->genLangButton($p->id, $langArray);
+				}
+
 				if ($p->parent == 0) {
-					if ($disablePrivateMenu != NULL) {
+					if (isset($option['disablePrivateMenu'])) {
 						$childs = $this->postRepository->where('parent', $p->id)->where('status', '1')->orderBy('order')->get();
 					} else {
 						$childs = $this->postRepository->where('parent', $p->id)->orderBy('order')->get();
@@ -52,7 +54,10 @@ class HandleMenuServices {
 						}
 						for ($i = 0; $i < count($childs); $i++) {
 							$childs[$i]->url = $this->handleUrlMenu($childs[$i]);
-							$childs[$i]->langButtons = $this->configLangService->genLangButton($childs[$i]->id, $langArray);
+							if (isset($option['langButton'])) {
+								$childs[$i]->langButtons = $this->configLangService->genLangButton($childs[$i]->id, $langArray);
+							}
+
 						}
 						$p->childs = $childs;
 					}
@@ -63,6 +68,7 @@ class HandleMenuServices {
 		}
 		return $menus;
 	}
+
 	public function handleMenuAcitve($p, $curRequest) {
 		if ($p->subtype == "home" && $curRequest == "") {
 			$active = "active";

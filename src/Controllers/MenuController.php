@@ -61,7 +61,8 @@ class MenuController extends Controller {
 			$data['lang'] = $this->langMain;
 			$data['arrayMenuParent'] = [];
 			if ($data['term']) {
-				$data['menus'] = $this->handleMenuService->handleMenuItem($data['term']->posts()->where('lang', $this->langMain)->orderBy('order')->get());
+				$posts = $data['term']->posts()->where('lang', $this->langMain)->orderBy('order')->get();
+				$data['menus'] = $this->handleMenuService->handleMenuItem($post, ['langButton' => true]);
 				$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts, 0);
 			}
 
@@ -138,6 +139,7 @@ class MenuController extends Controller {
 			$data['arrayMenuParent'] = $this->postRepository->createArrayMenuParent($data['term']->posts, $id);
 			$data['submit_label'] = "Update";
 			$data['meta'] = $this->postRepository->getMeta($data['post']->postMetas);
+			// dd($data);
 			$data['meta']['box_sidebars'] = $this->postRepository->getMultiMetaByKey($data['post']->postMetas, 'box_sidebar');
 			$data['post']['childs'] = $this->postRepository->findChilds($id);
 			$data['boxTranslate'] = $this->configLangService->genLangTranslateBox($data['post']);
