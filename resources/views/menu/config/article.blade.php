@@ -6,7 +6,7 @@
 		<input type="hidden" name="typeSubmit" id="typeSubmit" value="update">
 		@csrf
 		<div class="box-body">
-			@include('phobrv::input.inputFile',['label'=>'Thumb','key'=>'thumb','width'=>'200px'])
+			@include('phobrv::input.inputImage',['label'=>'Thumb','key'=>'thumb','width'=>'200px'])
 			@include('phobrv::input.inputTextarea',['label'=>'Content','key'=>'content'])
 		</div>
 		<div class="box-footer">

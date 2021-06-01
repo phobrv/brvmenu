@@ -37,7 +37,7 @@
 			@endif
 			@if($data['post']->subtype != 'link')
 			<label>Seo Meta</label>
-			@include('phobrv::input.inputFile',['label'=>'Thumb Meta','key'=>'thumb','width'=>'200px'])
+			@include('phobrv::input.inputImage',['label'=>'Thumb Meta','key'=>'thumb','width'=>'200px'])
 			@include('phobrv::input.inputText',['label'=>'Meta Title','key'=>'meta_title','type'=>'meta'])
 			@include('phobrv::input.inputText',['label'=>'Meta Description','key'=>'meta_description','type'=>'meta'])
 			@include('phobrv::input.inputText',['label'=>'Meta Keywords','key'=>'meta_keywords','type'=>'meta'])
