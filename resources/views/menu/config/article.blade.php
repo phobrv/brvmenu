@@ -14,8 +14,3 @@
 		</div>
 	</form>
 </div>
-<script type="text/javascript">
-	window.onload = function() {
-		CKEDITOR.replace('content', options);
-	};
-</script>

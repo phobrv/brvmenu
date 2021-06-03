@@ -82,6 +82,10 @@
 
 @section('scripts')
 <script type="text/javascript">
+	window.onload = function() {
+		if($('textarea[name="content"]').length > 0)
+			CKEDITOR.replace('content', options);
+	};
 	$('.MenuForm').submit(function(e){
 		e.preventDefault();
 
