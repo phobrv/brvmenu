@@ -36,7 +36,7 @@
 			@include('phobrv::input.text',['label'=>'Template','value'=>config('option.templateMenu')[$data['post']->subtype]])
 			@endif
 			@if($data['post']->subtype != 'link')
-			<label>Seo Meta</label>
+			@include('phobrv::input.label',['label'=>'Seo Meta'])
 			@include('phobrv::input.inputImage',['label'=>'Thumb Meta','key'=>'thumb','width'=>'200px'])
 			@include('phobrv::input.inputText',['label'=>'Meta Title','key'=>'meta_title','type'=>'meta'])
 			@include('phobrv::input.inputText',['label'=>'Meta Description','key'=>'meta_description','type'=>'meta'])
