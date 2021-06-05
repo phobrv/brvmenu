@@ -31,7 +31,7 @@ class HandleMenuServices {
 		$curRequest = str_replace("/", "", $_SERVER['REQUEST_URI']);
 		$langArray = $this->configLangService->getArrayLangConfig();
 		foreach ($posts as $p) {
-			if (isset($option['disablePrivateMenu']) || $p->status == 1) {
+			if (!isset($option['disablePrivateMenu']) || $p->status == 1) {
 
 				$p->active = $this->handleMenuAcitve($p, $curRequest);
 				$p->url = $this->handleUrlMenu($p);
