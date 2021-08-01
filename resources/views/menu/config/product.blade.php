@@ -7,7 +7,7 @@
 		@csrf
 		<div class="box-body">
 			@include('phobrv::input.inputSelect',['label'=>'Product Group','key'=>'product_term_paginate','type'=>'meta','array'=>$arrayProductGroup])
-			@include('phobrv::input.inputImage',['label'=>'Banner','key'=>'banner_image','width'=>'100%'])
+			@include('phobrv::input.inputImage',['label'=>'Banner','key'=>'banner_image','width'=>'100%','type'=>'meta'])
 		</div>
 		<div class="box-footer">
 			{{ Form::submit('Lưu cấu hình',array('class'=>'btn btn-primary pull-right')) }}
