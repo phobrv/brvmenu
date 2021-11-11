@@ -7,6 +7,7 @@
 		@csrf
 		<div class="box-body">
 			@include('phobrv::input.inputSelect',['label'=>'Chọn nhóm bài viết','key'=>'category_term_paginate','type'=>'meta','array'=>$arrayCategory])
+			@include('phobrv::input.inputText',['label'=>'Số lượng bài viết hiển thị','key'=>'category_term_paginate_number','inputType'=>'number','type'=>'meta'])
 		</div>
 		<div class="box-footer">
 			{{ Form::submit('Lưu cấu hình',array('class'=>'btn btn-primary')) }}
